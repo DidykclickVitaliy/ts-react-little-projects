@@ -1,20 +1,16 @@
 import React from "react";
+import { Modal } from "./components/Modal";
+import "./index.scss";
 
 function App() {
-  const [count, setCount] = React.useState<number>(0);
+  const [isOpen, setIsOpen] = React.useState<boolean>(false);
 
   return (
     <div className="App">
-      <div>
-        <h2>Счетчик:</h2>
-        <h1>{count}</h1>
-        <button className="minus" onClick={() => setCount(count - 1)}>
-          - Минус
-        </button>
-        <button className="plus" onClick={() => setCount(count + 1)}>
-          Плюс +
-        </button>
-      </div>
+      <button className="open-modal-btn" onClick={() => setIsOpen(true)}>
+        ✨ Открыть окно
+      </button>
+      <Modal isOpen={isOpen} setIsOpen={setIsOpen} />
     </div>
   );
 }
