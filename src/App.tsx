@@ -1,34 +1,20 @@
-import React from "react";
+import { Route, Routes } from "react-router-dom";
 
-import { Game, questions } from "./components/Game";
-import { Result } from "./components/Result";
-import "./index.scss";
-
-type AppContextType = {
-  step: number;
-  correct: number;
-  setStep: (index: number) => void;
-  setCorrect: (index: number) => void;
-};
-
-export const AppContext = React.createContext<AppContextType>({
-  step: 0,
-  correct: 0,
-  setStep: () => {},
-  setCorrect: () => {},
-});
+import "./assets/scss/index.scss";
+import Home from "./pages/Home";
+import Success from "./pages/Success";
 
 function App() {
-  const [step, setStep] = React.useState(0);
-  const [correct, setCorrect] = React.useState(0);
-
   return (
     <div className="App">
-      <AppContext.Provider value={{ step, correct, setStep, setCorrect }}>
-        {step < questions.length ? <Game /> : <Result />}
-      </AppContext.Provider>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/success" element={<Success />} />
+      </Routes>
     </div>
   );
 }
+
+// React motion or router
 
 export default App;
