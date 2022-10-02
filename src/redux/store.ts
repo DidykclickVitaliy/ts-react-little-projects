@@ -1,10 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { useDispatch } from "react-redux";
-import user from "./user/slice";
-import invitedUsers from "./invitedUsers/slice";
+import convertor from "./convertor/slice";
 
 export const store = configureStore({
-  reducer: { user, invitedUsers },
+  reducer: { convertor },
 });
 
 export type RootState = ReturnType<typeof store.getState>;

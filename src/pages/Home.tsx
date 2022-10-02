@@ -1,88 +1,68 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
 
-import { Skeleton } from "../components/User/Skeleton";
-import { User } from "../components/User";
-
-import { selectInvitedUsers } from "../redux/invitedUsers/selectors";
+import { Block } from "../components/Block";
 import { useAppDispatch } from "../redux/store";
-import { fetchUsers } from "../redux/user/asyncActions";
-import { selectUsers } from "../redux/user/selectors";
-import { findUser } from "../redux/user/slice";
-import { UserType } from "../redux/user/types";
+
+import { fetchRates } from "../redux/convertor/asyncActions";
+import { selectValue } from "../redux/convertor/selectors";
+import {
+  setFromCurrency,
+  setFromPrice,
+  setToCurrency,
+  setToPrice,
+} from "../redux/convertor/slice";
 
 const Home = () => {
+  const { rates, fromCurrency, toCurrency, fromPrice, toPrice } =
+    useSelector(selectValue);
   const dispatch = useAppDispatch();
-  const { users, searchValue } = useSelector(selectUsers);
-  const { invitedUsers } = useSelector(selectInvitedUsers);
-
-  const [isLoading, setIsLoading] = React.useState(true);
 
   React.useEffect(() => {
     try {
-      dispatch(fetchUsers());
-
-      setIsLoading(false);
+      dispatch(fetchRates());
     } catch (error) {
-      alert("Cannot get users");
+      alert(error);
     }
   }, []);
 
-  if (!users) {
-    return <>Loading...</>;
-  }
+  React.useEffect(() => {
+    onChangeToPrice(toPrice);
+  }, [fromCurrency]);
 
-  const filterUsers = (users: UserType[]) => {
-    return users.filter(
-      (user) =>
-        user.last_name.toLowerCase().includes(searchValue.toLowerCase()) ||
-        user.email.toLowerCase().includes(searchValue.toLowerCase())
-    );
+  React.useEffect(() => {
+    onChangeFromPrice(fromPrice);
+  }, [toCurrency]);
+
+  const onChangeFromPrice = (value: number) => {
+    const price = value / rates[fromCurrency];
+    const result = price * rates[toCurrency];
+
+    dispatch(setFromPrice(value));
+    dispatch(setToPrice(Number(result.toFixed(3))));
+  };
+
+  const onChangeToPrice = (value: number) => {
+    const result = (rates[fromCurrency] / rates[toCurrency]) * value;
+
+    dispatch(setToPrice(value));
+    dispatch(setFromPrice(Number(result.toFixed(3))));
   };
 
   return (
     <>
-      <div className="search">
-        <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.33-1.42 1.42-5.33-5.34zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z" />
-        </svg>
-        <input
-          type="text"
-          placeholder="Find user..."
-          value={searchValue}
-          onChange={(event) => dispatch(findUser(event.target.value))}
-        />
-        {searchValue && (
-          <button onClick={() => dispatch(findUser(""))}>
-            <img src="/assets/clear.svg" />
-          </button>
-        )}
-      </div>
-      {isLoading ? (
-        <div className="skeleton-list">
-          {[...Array(6)].map((_, index) => (
-            <Skeleton key={index} />
-          ))}
-        </div>
-      ) : (
-        <ul className="users-list">
-          {filterUsers(users).map((user) => (
-            <User key={user.id} user={user} />
-          ))}
-        </ul>
-      )}
-
-      <Link to="success">
-        <button
-          disabled={invitedUsers.length === 0}
-          className="send-invite-btn"
-        >
-          {invitedUsers.length > 0
-            ? `Send invitation to ${invitedUsers.length} users`
-            : "You do not select users to invite"}
-        </button>
-      </Link>
+      <Block
+        value={fromPrice}
+        currency={fromCurrency}
+        onChangeCurrency={setFromCurrency}
+        onChangeValue={onChangeFromPrice}
+      />
+      <Block
+        value={toPrice}
+        currency={toCurrency}
+        onChangeCurrency={setToCurrency}
+        onChangeValue={onChangeToPrice}
+      />
     </>
   );
 };
