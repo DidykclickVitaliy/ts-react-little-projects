@@ -1,5 +1,4 @@
 import { useSelector } from "react-redux";
-import { selectCollections } from "../redux/collections/selectors";
 
 import { selectFilters } from "../redux/filters/selectors";
 import { setCategory, setSearchValue } from "../redux/filters/slice";
