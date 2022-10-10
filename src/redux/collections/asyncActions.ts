@@ -1,5 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import { FiltersParams } from "../filters/types";
 
 import { FiltersParams } from "../filters/types";
 import { PhotoCollection } from "./types";
